@@ -20,7 +20,6 @@ Plug 'vim-airline/vim-airline'         " Lean & mean status/tabline for Vim
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'mattn/emmet-vim'
-Plug 'catppuccin/vim', { 'as': 'catppuccin' }
 Plug 'jiangmiao/auto-pairs'
 Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf.vim'
@@ -29,18 +28,31 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'maxmellon/vim-jsx-pretty'
+Plug 'tpope/vim-commentary'
 Plug 'vim-python/python-syntax'
 Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'dense-analysis/ale'
 Plug 'voldikss/vim-floaterm'
-Plug 'dracula/vim', { 'as': 'dracula' }
-Plug 'embark-theme/vim', { 'as': 'embark' }
 Plug 'tailwindcss/vim-tailwindcss'
 call plug#end()
 
 let g:lightline = {'colorscheme': 'catppuccin_mocha'}
 
 " Coc.nvim configuration
+
+" Coc error indication settings
+highlight CocErrorSign ctermfg=Red guifg=#ff0000
+highlight CocWarningSign ctermfg=Yellow guifg=#ffff00
+highlight CocInfoSign ctermfg=Blue guifg=#0000ff
+highlight CocHintSign ctermfg=Green guifg=#00ff00
+
+" Add status line support
+set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+
+" Navigate diagnostics
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
 function! CheckBackspace() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
@@ -61,6 +73,7 @@ else
   inoremap <silent><expr> <c-@> coc#refresh()
 endif
 
+" New additions for enhanced code navigation and information
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
@@ -75,6 +88,9 @@ function! ShowDocumentation()
 endfunction
 
 nnoremap <silent> K :call ShowDocumentation()<CR>
+nnoremap <silent> <leader>r  :<C-u>CocList -I symbols<cr>
+nnoremap <silent> <leader>i :call CocActionAsync('doHover')<CR>
+nmap <leader>rn <Plug>(coc-rename)
 
 " NERDTree settings
 autocmd StdinReadPre * let s:std_in=1
@@ -90,6 +106,21 @@ let g:NERDTreeCustomOpenArgs = {'file': {'where': 'v', 'keepopen': 1, 'stay': 0}
 
 nnoremap <C-n> :NERDTreeToggle<CR>
 nnoremap <C-f> :Files<CR>
+
+" Refresh NERDTree when focusing on its window
+autocmd BufEnter NERD_tree_* | execute 'normal R'
+
+" Refresh NERDTree after saving a file
+autocmd BufWritePost * NERDTreeFocus | execute 'normal R' | wincmd p
+
+" Refresh NERDTree after creating a new file
+autocmd BufCreate * NERDTreeFocus | execute 'normal R' | wincmd p
+
+" Custom command to refresh NERDTree
+command! NERDTreeRefresh :NERDTreeFocus | execute 'normal R' | wincmd p
+
+" Key mapping to refresh NERDTree
+nnoremap <leader>nr :NERDTreeFocus<CR>R<C-w><C-p>
 
 autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 
@@ -109,6 +140,35 @@ nnoremap <leader>] :FloatermNext<CR>
 nnoremap <leader>[ :FloatermPrev<CR>
 nnoremap <leader>th :FloatermSplit<CR>
 nnoremap <leader>tv :FloatermVSplit<CR>
+
+
+" Commenting configuration
+
+" Use // for C++ style languages
+autocmd FileType c,cpp,cs,java,js,ts,go,cc setlocal commentstring=//\ %s
+" Use # for script-like languages
+autocmd FileType sh,ruby,python,perl setlocal commentstring=#\ %s
+" Use -- for SQL
+autocmd FileType sql setlocal commentstring=--\ %s
+" Use " for vim
+autocmd FileType vim setlocal commentstring=\"\ %s
+" Use ; for assembly
+autocmd FileType asm setlocal commentstring=;\ %s
+" Use <!-- --> for HTML and XML
+autocmd FileType html,xml setlocal commentstring=<!--\ %s\ -->
+" Use % for LaTeX
+autocmd FileType tex setlocal commentstring=%\ %s
+
+" Keymappings for commenting
+" gcc: Toggle comment for current line
+" gc: Toggle comment for selected lines in visual mode
+" <leader>/: Toggle comment (works in both normal and visual mode)
+nnoremap <leader>/ :Commentary<CR>
+vnoremap <leader>/ :Commentary<CR>
+
+" Optional: if you want to use different keys for single and multi-line comments
+nnoremap <leader>c :Commentary<CR>
+vnoremap <leader>c :Commentary<CR>
 
 " Language specific configurations
 let g:python_highlight_all = 1
