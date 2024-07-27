@@ -28,17 +28,32 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'maxmellon/vim-jsx-pretty'
+Plug 'peitalin/vim-jsx-typescript'
 Plug 'tpope/vim-commentary'
 Plug 'vim-python/python-syntax'
 Plug 'octol/vim-cpp-enhanced-highlight'
+Plug 'tomasiser/vim-code-dark'
 Plug 'dense-analysis/ale'
+Plug 'mlaursen/vim-react-snippets'
 Plug 'voldikss/vim-floaterm'
-Plug 'tailwindcss/vim-tailwindcss'
 call plug#end()
 
-let g:lightline = {'colorscheme': 'catppuccin_mocha'}
+colorscheme codedark
 
-" Coc.nvim configuration
+let g:coc_global_extensions = [
+\ 'coc-tsserver',
+\ 'coc-json',
+\ 'coc-pyright',
+\ 'coc-html',
+\ 'coc-css',
+\ 'coc-yaml',
+\ 'coc-sql',
+\ 'coc-go',
+\ 'coc-clangd',
+\ 'coc-sh',
+\ 'coc-eslint',
+\ 'coc-prettier'
+\]
 
 " Coc error indication settings
 highlight CocErrorSign ctermfg=Red guifg=#ff0000
@@ -188,6 +203,8 @@ let g:cpp_class_decl_highlight = 1
 let g:ale_linters = {
 \   'javascript': ['eslint'],
 \   'typescript': ['eslint', 'tsserver'],
+\   'javascriptreact': ['eslint'],
+\   'typescriptreact': ['eslint', 'tsserver'],
 \   'python': ['flake8', 'pylint'],
 \   'go': ['golangci-lint'],
 \   'c': ['clang'],
@@ -198,6 +215,8 @@ let g:ale_fixers = {
 \   '*': ['remove_trailing_lines', 'trim_whitespace'],
 \   'javascript': ['eslint', 'prettier'],
 \   'typescript': ['eslint', 'prettier'],
+\   'typescriptreact': ['eslint', 'prettier'],
+\   'javascriptreact': ['eslint', 'prettier'],
 \   'python': ['black'],
 \   'go': ['gofmt', 'goimports'],
 \   'c': ['clang-format'],
@@ -206,5 +225,14 @@ let g:ale_fixers = {
 
 let g:ale_fix_on_save = 1
 
-" Tailwind CSS
-let g:tailwindcss_enable = 1
+" React JSX syntax highlighting
+let g:vim_jsx_pretty_highlight_close_tag = 1
+let g:vim_jsx_pretty_colorful_config = 1
+
+" File type detection for React
+autocmd BufNewFile,BufRead *.jsx set filetype=javascriptreact
+autocmd BufNewFile,BufRead *.tsx set filetype=typescriptreact
+
+" React specific settings
+autocmd BufEnter *.{js,jsx,ts,tsx} :syntax sync fromstart
+autocmd BufLeave *.{js,jsx,ts,tsx} :syntax sync clear

@@ -40,6 +40,6 @@ To use this configuation install the following dependencies.
     vim ~/.vimrc
 
     # run the following instruction in command mode
-    :CocInstall coc-tsserver coc-pyright coc-go coc-clangd coc-html coc-css coc-json coc-vimlsp coc-emmet coc-sql coc-sh coc-yaml coc-docker
+    :CocInstall coc-tsserver coc-pyright coc-go coc-clangd coc-html coc-css coc-json coc-vimlsp coc-emmet coc-sql coc-sh coc-yaml coc-docker coc-eslint coc-prettier coc-java
     ```
 After all the instructions and installations are followed/done, exit the vim and open any project, you should see the configurations working.
