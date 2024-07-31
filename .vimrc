@@ -25,8 +25,8 @@ Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf.vim'
 Plug 'sheerun/vim-polyglot'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
-Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
+Plug 'yuezk/vim-js'  " Alternative JavaScript syntax
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'peitalin/vim-jsx-typescript'
 Plug 'tpope/vim-commentary'
@@ -108,35 +108,59 @@ nnoremap <silent> <leader>i :call CocActionAsync('doHover')<CR>
 nmap <leader>rn <Plug>(coc-rename)
 
 " NERDTree settings
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 let g:NERDTreeShowHidden = 1
 let g:NERDTreeWinSize = 30
 let g:NERDTreeDirArrowExpandable = '+'
 let g:NERDTreeDirArrowCollapsible = '-'
-let NERDTreeQuitOnOpen = 0
-let NERDTreeMinimalUI = 1
-let NERDTreeDirArrows = 1
+let g:NERDTreeQuitOnOpen = 0
+let g:NERDTreeMinimalUI = 1
+let g:NERDTreeDirArrows = 1
 let g:NERDTreeCustomOpenArgs = {'file': {'where': 'v', 'keepopen': 1, 'stay': 0}}
 
-nnoremap <C-n> :NERDTreeToggle<CR>
+" Toggle NERDTree
+nnoremap <C-n> :call NERDTreeToggleInCurDir()<CR>
+
+function! NERDTreeToggleInCurDir()
+  " If NERDTree is open in the current buffer
+  if exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1
+    exe ":NERDTreeClose"
+  else
+    exe ":NERDTreeFind"
+  endif
+endfunction
+
+" Open FZF files (assuming you use fzf.vim)
 nnoremap <C-f> :Files<CR>
 
 " Refresh NERDTree when focusing on its window
-autocmd BufEnter NERD_tree_* | execute 'normal R'
+augroup NERDTreeRefresh
+  autocmd!
+  autocmd BufEnter NERD_tree_* call NERDTreeRefresh()
+  autocmd BufWritePost,BufCreate * call NERDTreeRefreshIfOpen()
+augroup END
 
-" Refresh NERDTree after saving a file
-autocmd BufWritePost * NERDTreeFocus | execute 'normal R' | wincmd p
+" Custom function to refresh NERDTree
+function! NERDTreeRefresh()
+    if exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1
+        NERDTreeFocus
+        execute 'NERDTreeRefreshRoot'
+    endif
+endfunction
 
-" Refresh NERDTree after creating a new file
-autocmd BufCreate * NERDTreeFocus | execute 'normal R' | wincmd p
+" Function to refresh NERDTree if it's open
+function! NERDTreeRefreshIfOpen()
+    if exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1
+        call NERDTreeRefresh()
+    endif
+endfunction
 
 " Custom command to refresh NERDTree
-command! NERDTreeRefresh :NERDTreeFocus | execute 'normal R' | wincmd p
+command! NERDTreeRefresh call NERDTreeRefresh()
 
 " Key mapping to refresh NERDTree
-nnoremap <leader>nr :NERDTreeFocus<CR>R<C-w><C-p>
+nnoremap <leader>nr :call NERDTreeRefresh()<CR>
 
+" Close Vim if NERDTree is the only window remaining
 autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 
 " Split navigation
