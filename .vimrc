@@ -5,7 +5,7 @@ set number
 set relativenumber
 set mouse=a
 set tabstop=4
-set softtabstop=2
+set softtabstop=4
 set shiftwidth=4
 set expandtab
 set clipboard=unnamedplus
@@ -56,6 +56,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'preservim/nerdtree'
 Plug 'vimlab/split-term.vim'
 Plug 'vim-airline/vim-airline'
+Plug 'jiangmiao/auto-pairs'
 call plug#end()
 
 "-------------------- Git Stuff-------------------- 
@@ -144,4 +145,6 @@ let g:airline#extensions#tabline#enabled = 1  " Enable tabline
 let g:airline#extensions#hunks#enabled = 1   " Enable hunks for git
 let g:airline#extensions#branch#enabled = 1  " Show branch name
 
+
+"--------------------------------------- Auto pair ---------------------------
 
